@@ -17,9 +17,27 @@ docker build .
 docker run -p 3000:3000 9134b990094eade5b78a511f9d423cb86736886a88c55426324b4da334c2ffea
 
 # List all running containers
+# docker processes
 docker ps
 # Stop NAME of container
 docker stop elegant_ganguly
+
+##############################################################
+
+# nodejs-app folder
+cd nodejs-app
+docker build .
+docker run -p 3000:3000 fb02
+docker ps
+docker stop magical_engelbart
+
+# Rebuild after amending files in nodejs-app folder
+docker build .
+docker run -p 3000:3000 f244
+
+# Restart container
+docker ps -a
+docker start youthful_hermann
 ```
 
 &nbsp;
@@ -60,9 +78,11 @@ docker stop elegant_ganguly
 &nbsp;
 
 - Foundation
+
   - Images & Containers
   - Data & Volumes (in Containers)
   - Containers & Networking
+
 - "Real Life"
   - Multi-Container Projects
   - Using Docker-Compose
@@ -73,6 +93,37 @@ docker stop elegant_ganguly
   - Data & Volumes
   - Networking
   - Deploying a Kubernetes Clusters
+
+&nbsp;
+
+---
+
+&nbsp;
+
+### Images & Containers
+
+|                  Images                  |                      Containers                       |
+| :--------------------------------------: | :---------------------------------------------------: |
+|   Templates/ Blueprints for containers   |            The running "unit of software"             |
+| Contains code + required tools/ runtimes | Multiple containers can be created based on one image |
+
+- Using Pre-Built & Custom Images
+  - [Docker Hub](https://hub.docker.com/)
+  - A container is base on an image
+- Creating & Managing Containers
+
+![image-layers](./diagrams/image-layers.png)
+
+&nbsp;
+
+![image-containers](./diagrams/image-containers.png)
+
+|                         Images                         |                      Containers                      |
+| :----------------------------------------------------: | :--------------------------------------------------: |
+| Can be <b>tagged</b> (named) <i>-t, docker tag ...</i> |          Can be <b>named</b> <i>--name</i>           |
+|       Can be <b>listed</b> <i>docker images</i>        | Can be <b>configured in detail</b> see <i>--help</i> |
+|   Can be <b>analyzed</b> <i>docker image inspect</i>   |        Can be <b>listed</b> <i>docker ps</i>         |
+| Can be <b>removed</b> <i>docker rmi, docker prune</i>  |        Can be <b>removed</b> <i>docker rm</i>        |
 
 &nbsp;
 
