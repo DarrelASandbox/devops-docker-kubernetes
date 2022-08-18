@@ -193,6 +193,25 @@ docker build -t goals:latest.
   - <b>name: </b>Defines a <b>group</b> of, <b>possible more specialized</b>, images (e.g. "node")
   - <b>tag: </b>Defines a <b>specialized image within a group of images</b> (e.g. "14")
 - Specify the version (tag) to use
+- Docker Hub
+  - Official Docker Image Registry
+  - Pubic, private and "official" mages
+- Private Registry
+  - Any provider/registry you want to use
+  - Only your own (or team) images <b>(Needs to be HOST:NAME to talk to private registry)</b>
+  - Share: <code>docker push IMAGE_NAME</code>
+  - Use: <code>docker pull IMAGE_NAME</code>
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>ahmet: </b>Pulling and running image
+> Let's say I have pulled an image from Dockerhub which is a webserver listening a port, how can I know that which port it's listening without seeing code? Maybe we'll cover that in future lessons..
+>
+> <b>Maximilian: </b>That's why you typically should document that via EXPOSE in your Dockerfile. If you pull some image where you never saw the Dockerfile, it should be documented on Docker Hub.
 
 &nbsp;
 
