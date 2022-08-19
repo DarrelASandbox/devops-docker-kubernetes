@@ -218,3 +218,41 @@ docker build -t goals:latest.
 ---
 
 &nbsp;
+
+### Data & Volumes
+
+|                  Application                  |                 Temporary App Data                  |                    Permanent App Data                     |
+| :-------------------------------------------: | :-------------------------------------------------: | :-------------------------------------------------------: |
+|       Application (Code + Environment)        |    Temporary App Data (e.g. entered user input)     |            Permanent App Data (user accounts)             |
+|  Written & provided by you (= the developer)  |       Fetched / Produced in running container       |          Fetched / Produced in running container          |
+|  Added to image and container in build phase  |         Stored in memory or temporary files         |               Stored in files or a database               |
+| “Fixed”: Can’t be changed once image is built |     Dynamic and changing, but cleared regularly     |      Must not be lost if container stops / restarts       |
+|       Read-only, hence stored in Images       | Read + write, temporary, hence stored in Containers | Read + write, permanent, stored with Containers & Volumes |
+
+- Volumes are folders on your host machine hard drive which are mounted (“made available”, mapped) into containers
+  - Anonymous
+  - Named
+- Host (Your Computer) /some-path <---> /app/user-data
+- Volumes persist if a container shuts down. If a container (re-)starts and mounts a volume, any data inside of that volume is available in the container.
+- A container can write data into a volume and read data from it.
+- <b>Bind Mounts </b>are great for persistent and editable data
+- For Windows using WSL Tool, there is a need to access Linux filesystems
+
+|                        Command                         |  Persist State   |
+| :----------------------------------------------------: | :--------------: |
+|        <code>docker run -v /app/data ...</code>        | Anonymous Volume |
+|     <code>docker run -v data:/app/data ...</code>      |   Named Volume   |
+| <code>docker run -v /path/to/code:/app/code ...</code> |    Bind Mount    |
+
+|                       Anonymous Volumes                        |                         Named Volumes                          |                           Bind Mounts                            |
+| :------------------------------------------------------------: | :------------------------------------------------------------: | :--------------------------------------------------------------: |
+|          Created specifically for a single container           |    Created in general – not tied to any specific container     | Location on host file system, not tied to any specific container |
+|   Survives container shutdown / restart unless --rm is used    | Survives container shutdown / restart – removal via Docker CLI |    Survives container shutdown / restart – removal on host fs    |
+|              Can not be shared across containers               |                Can be shared across containers                 |                 Can be shared across containers                  |
+| Since it’s anonymous, it can’t be re-used (even on same image) |      Can be re-used for same container (across restarts)       |       Can be re-used for same container (across restarts)        |
+
+&nbsp;
+
+---
+
+&nbsp;

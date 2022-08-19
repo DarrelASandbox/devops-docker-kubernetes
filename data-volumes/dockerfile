@@ -1,0 +1,19 @@
+FROM node:14
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 80
+
+# anonymous volumes
+# VOLUME ["/app/feedback"]
+
+# CMD ["node", "server.js"]
+
+# using nodemon
+CMD ["npm", "start"]
