@@ -102,6 +102,8 @@ docker run -p 3000:80 -d --rm --name nodejs-app f24419
 # Specific image tag (tag can be a number of string)
 docker build -t goals:latest.
 
+# Volume commands
+docker volume --help
 ```
 
 &nbsp;
@@ -250,6 +252,32 @@ docker build -t goals:latest.
 |   Survives container shutdown / restart unless --rm is used    | Survives container shutdown / restart – removal via Docker CLI |    Survives container shutdown / restart – removal on host fs    |
 |              Can not be shared across containers               |                Can be shared across containers                 |                 Can be shared across containers                  |
 | Since it’s anonymous, it can’t be re-used (even on same image) |      Can be re-used for same container (across restarts)       |       Can be re-used for same container (across restarts)        |
+
+- <b>Read-only Volume</b>
+- We remove <code>COPY . .</code> in the dockerfile while using bind mount run command but we will not be using it when we are in the production.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>Lin: </b>Why do we not use bind mounts in production?
+
+> <b>Adam: </b>You don't want to use bind mounts in production because they aren't very portable. If I gave you a command to start a container with an absolute path to the volume then you wouldn't be able to use it without editing it for your filesystem. Named volumes don't have that problem.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+- Docker supports build-time <b>ARGuments</b> and runtime <b>ENVironment</b> variables
+
+|                                      ARG                                      |                         ENV                          |
+| :---------------------------------------------------------------------------: | :--------------------------------------------------: |
+| Available inside of Dockerfile, NOT accessible in CMD or any application code | Available inside of Dockerfile & in application code |
+|               Set on image build (docker build) via --build-arg               | Set via ENV in Dockerfile or via --env on docker run |
 
 &nbsp;
 
