@@ -15,4 +15,7 @@ docker run -dp 3000:80 --rm --name feedback-app -v feedback:/app/feedback -v $(p
 
 # .env file variables
 docker run -dp 3000:8000 --env-file ./.env --rm --name feedback-app -v feedback:/app/feedback -v ${pwd}:/app -v /app/node_modules feedback-app
+
+# Build image on a different tag on a different arg value
+docker build -t feedback-app:dev --build-arg DEFAULT_PORT=8000 .
 ```
