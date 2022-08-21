@@ -52,4 +52,10 @@ docker run --name goals-app-backend --rm -d -v $(pwd):/backend -v logs:/backend/
 
 # After nodemon setup
 docker logs goals-app-backend
+
+# Blind mount for frontend
+# Powershell command
+docker run --name goals-app-frontend --rm -dp 3000:3000 -v ${pwd}/src:/frontend/src --network goals-network goals-app-frontend
+# MacOS/ Linux command
+docker run --name goals-app-frontend --rm -dp 3000:3000 -v $(pwd)/src:/frontend/src --network goals-network goals-app-frontend
 ```
