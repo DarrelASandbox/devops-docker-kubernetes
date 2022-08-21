@@ -368,6 +368,8 @@ docker volume --help
 
 ## Multi-Containers App
 
+- [Docker Hub Mongo image - Authentication](https://hub.docker.com/_/mongo/)
+
 ### goals-app
 
 > <b>Bernard: </b>Better solution for the goals app

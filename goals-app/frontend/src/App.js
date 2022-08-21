@@ -14,7 +14,7 @@ function App() {
       setIsLoading(true);
 
       try {
-        const response = await fetch('http://localhost/goals');
+        const response = await fetch('http://localhost:3000/goals');
 
         const resData = await response.json();
 
@@ -25,8 +25,7 @@ function App() {
         setLoadedGoals(resData.goals);
       } catch (err) {
         setError(
-          err.message ||
-            'Fetching goals failed - the server responsed with an error.'
+          err.message || 'Fetching goals failed - the server responsed with an error.'
         );
       }
       setIsLoading(false);
@@ -39,14 +38,14 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost/goals', {
+      const response = await fetch('http://localhost:3000/goals', {
         method: 'POST',
         body: JSON.stringify({
           text: goalText,
         }),
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       const resData = await response.json();
@@ -67,8 +66,7 @@ function App() {
       });
     } catch (err) {
       setError(
-        err.message ||
-          'Adding a goal failed - the server responsed with an error.'
+        err.message || 'Adding a goal failed - the server responsed with an error.'
       );
     }
     setIsLoading(false);
@@ -78,7 +76,7 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost/goals/' + goalId, {
+      const response = await fetch('http://localhost:3000/goals/' + goalId, {
         method: 'DELETE',
       });
 
@@ -94,8 +92,7 @@ function App() {
       });
     } catch (err) {
       setError(
-        err.message ||
-          'Deleting the goal failed - the server responsed with an error.'
+        err.message || 'Deleting the goal failed - the server responsed with an error.'
       );
     }
     setIsLoading(false);
@@ -105,9 +102,7 @@ function App() {
     <div>
       {error && <ErrorAlert errorText={error} />}
       <GoalInput onAddGoal={addGoalHandler} />
-      {!isLoading && (
-        <CourseGoals goals={loadedGoals} onDeleteGoal={deleteGoalHandler} />
-      )}
+      {!isLoading && <CourseGoals goals={loadedGoals} onDeleteGoal={deleteGoalHandler} />}
     </div>
   );
 }
