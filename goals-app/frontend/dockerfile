@@ -1,0 +1,14 @@
+FROM node
+
+WORKDIR /frontend
+
+COPY package.json .
+
+RUN npm install
+
+COPY . . 
+
+# document PORT as 3000
+EXPOSE 3000
+
+CMD [ "npm", "start" ]

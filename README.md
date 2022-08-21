@@ -7,6 +7,7 @@
     <li><a href="#images--containers">Images & Containers</a></li>
     <li><a href="#data--volumes">Data & Volumes</a></li>
     <li><a href="#networking">Networking</a></li>
+    <li><a href="#multi-containers-app">Multi-Containers App</a></li>
   </ol>
 </details>
 
@@ -215,8 +216,8 @@ docker volume --help
 - Private Registry
   - Any provider/registry you want to use
   - Only your own (or team) images <b>(Needs to be HOST:NAME to talk to private registry)</b>
-  - Share: <code>docker push IMAGE_NAME</code>
-  - Use: <code>docker pull IMAGE_NAME</code>
+  - Share: `docker push IMAGE_NAME`
+  - Use: `docker pull IMAGE_NAME`
 
 &nbsp;
 
@@ -254,11 +255,11 @@ docker volume --help
 - <b>Bind Mounts </b>are great for persistent and editable data
 - For Windows using WSL Tool, there is a need to access Linux filesystems
 
-|                        Command                         |  Persist State   |
-| :----------------------------------------------------: | :--------------: |
-|        <code>docker run -v /app/data ...</code>        | Anonymous Volume |
-|     <code>docker run -v data:/app/data ...</code>      |   Named Volume   |
-| <code>docker run -v /path/to/code:/app/code ...</code> |    Bind Mount    |
+|                      Command                      | Persist State |
+| :-----------------------------------------------: | :-----------: |
+|        `docker run -v /app/data ...</code>        | Anonymous V`  |
+|     `docker run -v data:/app/data ...</code>      |  Named Vol`   |
+| `docker run -v /path/to/code:/app/code ...</code> |   Bind Mou`   |
 
 |                       Anonymous Volumes                        |                         Named Volumes                          |                           Bind Mounts                            |
 | :------------------------------------------------------------: | :------------------------------------------------------------: | :--------------------------------------------------------------: |
@@ -268,7 +269,7 @@ docker volume --help
 | Since it’s anonymous, it can’t be re-used (even on same image) |      Can be re-used for same container (across restarts)       |       Can be re-used for same container (across restarts)        |
 
 - <b>Read-only Volume</b>
-- We remove <code>COPY . .</code> in the dockerfile while using bind mount run command but we will not be using it when we are in the production.
+- We remove `COPY . .</code> in the dockerfile while using bind mount run command but we will not be using it when we are in the prod`
 
 &nbsp;
 
@@ -295,7 +296,7 @@ docker volume --help
 
 > <b>Environment variables and security: </b>Depending on which kind of data you're storing in your environment variables, you might not want to include the secure data directly in your Dockerfile.
 >
-> Instead, go for a separate environment variables file which is then only used at runtime (i.e. when you run your container with docker run). Otherwise, the values are "baked into the image" and everyone can read these values via <code>docker history IMAGE</code>.
+> Instead, go for a separate environment variables file which is then only used at runtime (i.e. when you run your container with docker run). Otherwise, the values are "baked into the image" and everyone can read these values via `docker history IMAGE<`
 >
 > For some values, this might not matter but for credentials, private keys etc. you definitely want to avoid that! If you use a separate file, the values are not part of the image since you point at that file when you run docker run. But make sure you don't commit that separate file as part of your source control repository, if you're using source control.
 
@@ -319,9 +320,9 @@ docker volume --help
 
 > Docker Networks actually support different kinds of <b>"Drivers"</b> which influence the behavior of the Network. The default driver is the <b>"bridge" driver</b> - it provides the behavior shown in this module (i.e. Containers can find each other by name if they are in the same Network).
 >
-> The driver can be set when a Network is created, simply by adding the <code>--driver</code> option.
+> The driver can be set when a Network is created, simply by adding the `--driver</code> `
 >
-> <code>docker network create --driver bridge my-net</code>
+> `docker network create --driver bridge my-net`
 >
 > Of course, if you want to use the "bridge" driver, you can simply omit the entire option since "bridge" is the default anyways. Docker also supports these alternative drivers - though you will use the "bridge" driver in most cases:
 >
@@ -358,6 +359,25 @@ docker volume --help
 > This [article](https://medium.com/@markuman/is-docker-swarm-mode-eol-7a3f316116a3) is also quite interesting.
 >
 > Feel free to use whatever you personally prefer - Docker Swarm might do the trick of course. But I definitely see Kubernetes being and becoming more important.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Multi-Containers App
+
+### goals-app
+
+> <b>Bernard: </b>Better solution for the goals app
+> A better solution is to use the proxy feature of create-react-app (based on webpack dev server). Add the following line to your frontend package.json:
+>
+> `"proxy": "http://goals-backend:80"`
+>
+> Then, you can stop mapping the port 80 from the backend. Modify the react App.js to connect to `localhost:3000` instead of `localhost`.
+>
+> In this setup, only the frontend app (port 3000) is exposed and all backend calls are proxied inside the container network. This is solution is more secure and ressemble better a setup which could be used in production.
 
 &nbsp;
 
