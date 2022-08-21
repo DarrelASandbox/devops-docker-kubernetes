@@ -1,3 +1,17 @@
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#about-the-project">About The Project</a></li>
+    <li><a href="#commands">Commands</a></li>
+    <li><a href="#basics">Basics</a></li>
+    <li><a href="#images--containers">Images & Containers</a></li>
+    <li><a href="#data--volumes">Data & Volumes</a></li>
+    <li><a href="#networking">Networking</a></li>
+  </ol>
+</details>
+
+&nbsp;
+
 ## About The Project
 
 - Docker & Kubernetes: The Practical Guide [2022 Edition]
@@ -166,7 +180,7 @@ docker volume --help
 
 &nbsp;
 
-### Images & Containers
+## Images & Containers
 
 |                  Images                  |                      Containers                       |
 | :--------------------------------------: | :---------------------------------------------------: |
@@ -221,7 +235,7 @@ docker volume --help
 
 &nbsp;
 
-### Data & Volumes
+## Data & Volumes
 
 |                  Application                  |                 Temporary App Data                  |                    Permanent App Data                     |
 | :-------------------------------------------: | :-------------------------------------------------: | :-------------------------------------------------------: |
@@ -284,6 +298,66 @@ docker volume --help
 > Instead, go for a separate environment variables file which is then only used at runtime (i.e. when you run your container with docker run). Otherwise, the values are "baked into the image" and everyone can read these values via <code>docker history IMAGE</code>.
 >
 > For some values, this might not matter but for credentials, private keys etc. you definitely want to avoid that! If you use a separate file, the values are not part of the image since you point at that file when you run docker run. But make sure you don't commit that separate file as part of your source control repository, if you're using source control.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Networking
+
+- Container to WWW communication
+- Container to local host machine
+- Container to container communication
+
+![containers-and-network-requests](./diagrams/containers-and-network-requests.png)
+
+&nbsp;
+
+![docker-ip-resolving](./diagrams/docker-ip-resolving.png)
+
+> Docker Networks actually support different kinds of <b>"Drivers"</b> which influence the behavior of the Network. The default driver is the <b>"bridge" driver</b> - it provides the behavior shown in this module (i.e. Containers can find each other by name if they are in the same Network).
+>
+> The driver can be set when a Network is created, simply by adding the <code>--driver</code> option.
+>
+> <code>docker network create --driver bridge my-net</code>
+>
+> Of course, if you want to use the "bridge" driver, you can simply omit the entire option since "bridge" is the default anyways. Docker also supports these alternative drivers - though you will use the "bridge" driver in most cases:
+>
+> <b>host: </b>For standalone containers, isolation between container and host system is removed (i.e. they share localhost as a network)
+>
+> <b>overlay: </b>Multiple Docker daemons (i.e. Docker running on different machines) are able to connect with each other. Only works in "Swarm" mode which is a dated / almost > deprecated way of connecting multiple containers
+>
+> <b>macvlan: </b>You can set a custom MAC address to a container - this address can then be used for communication with that container
+>
+> <b>none: </b>All networking is disabled.
+>
+> <b>Third-party plugins: </b>You can install third-party plugins which then may add all kinds of behaviors and functionalities
+>
+> As mentioned, the "bridge" driver makes most sense in the vast majority of scenarios.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>John: </b>Swarm, outdated or out branded?
+>
+> You cited Swarm as "dated / almost deprecated way of connecting multiple containers". Interesting as Bret Fisher, Docker Captain who does most of Docker's release cycle updates for the community has a very different take. He prefers Swarm but realizes Kubes has overwhelmed the community with marketing.
+>
+> Secondary, Swarm is less complicated though Kubes is trying to uncomplicate itself. Kubes also has higher system requirements. If you have massive complexity and scale extrodinaire then yes, Kubes is a winning choice. It has been said the first rule of architecture is "Everything in software architecture is a tradeoff". Kubes is no exception, and Swarm is also no exception. Swarm is the best choice in many situations.
+>
+> P.S. When I got my Docker Enterprise course certificate, official training, the instructor just two years ago said that eight out of ten deployments were on Swarm. Also, Mirantis was going to do away with Swarm and due to customer input have pulled Swarm back into long term support plans. Remember, K.I.S.S.? Why do Kubes if it's not needed?
+>
+> <b>Maximilian: </b>Yeah, swarm can be easier to get started with - still, I'm not convinced by Swarm's future.
+>
+> You will find different opinions out there for sure but whilst Kubernetes is clearly under very active development, the same can't really be said for Swarm. You can use it and it might "not go anywhere" but it also doesn't look like it's really being embraced by large chunks of the community.
+>
+> This [article](https://medium.com/@markuman/is-docker-swarm-mode-eol-7a3f316116a3) is also quite interesting.
+>
+> Feel free to use whatever you personally prefer - Docker Swarm might do the trick of course. But I definitely see Kubernetes being and becoming more important.
 
 &nbsp;
 
