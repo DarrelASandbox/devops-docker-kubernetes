@@ -7,6 +7,7 @@
     <li><a href="#data--volumes">Data & Volumes</a></li>
     <li><a href="#networking">Networking</a></li>
     <li><a href="#multi-containers-app">Multi-Containers App</a></li>
+    <li><a href="#docker-compose">Docker Compose</a></li>
   </ol>
 </details>
 
@@ -274,6 +275,25 @@
 > Then, you can stop mapping the port 80 from the backend. Modify the react App.js to connect to `localhost:3000` instead of `localhost`.
 >
 > In this setup, only the frontend app (port 3000) is exposed and all backend calls are proxied inside the container network. This is solution is more secure and ressemble better a setup which could be used in production.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Docker Compose
+
+- What Docker Compose is NOT
+  - does NOT replace Dockerfiles for custom Images
+  - does NOT replace Images or Containers
+  - is NOT suited for managing multiple containers on different hosts (machines)
+- Services (Containers)
+  - Published Ports
+  - Environment Variables
+  - Volumes
+  - Networks
+- [Compose file versions and upgrading](https://docs.docker.com/compose/compose-file/compose-versioning/)
 
 &nbsp;
 

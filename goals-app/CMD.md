@@ -1,3 +1,5 @@
+## CLI
+
 ```sh
 # DB
 docker run --name mongodb --rm -dp 27017:27017 mongo
@@ -58,4 +60,20 @@ docker logs goals-app-backend
 docker run --name goals-app-frontend --rm -dp 3000:3000 -v ${pwd}/src:/frontend/src --network goals-network goals-app-frontend
 # MacOS/ Linux command
 docker run --name goals-app-frontend --rm -dp 3000:3000 -v $(pwd)/src:/frontend/src --network goals-network goals-app-frontend
+```
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Docker Compose
+
+```sh
+docker-compose up -d
+docker-compose down
+
+# Removes volume
+docker-compose down -v
 ```

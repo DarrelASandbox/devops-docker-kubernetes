@@ -1,0 +1,48 @@
+# docker compose (dc) version
+version: '3.8'
+
+# 2 spaces indentation to represent direct child
+# dc default settings:
+# remove container after shutting down
+# create network
+services:
+  mongodb:
+    image: 'mongo'
+    container_name: mongodb
+    volumes:
+      - data:/data/db
+    env_file:
+      - ./.env
+
+  backend:
+    build: ./backend
+    image: goals-app-backend
+    container_name: goals-app-backend
+    ports:
+      - '80:80'
+    volumes:
+      - logs:/backend/logs
+      - ./backend:/backend
+      - /backend/node_modules
+    env_file:
+      - ./.env
+    depends_on:
+      - mongodb
+
+  frontend:
+    build: ./frontend
+    image: goals-app-frontend
+    container_name: goals-app-frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend/src:/frontend/src
+    # stdin_open: true
+    # tty: true
+    depends_on:
+      - backend
+
+# Named volumes
+volumes:
+  data:
+  logs:
