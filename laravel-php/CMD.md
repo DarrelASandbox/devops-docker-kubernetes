@@ -1,5 +1,6 @@
 ```sh
-# Might want to empty src folder first
+# Might want to delete entire src folder first before creating a new src folder
+# due to hidden files
 # run individual container of docker-compose.yaml
 docker-compose run --rm composer create-project --prefer-dist laravel/laravel=8 .
 
