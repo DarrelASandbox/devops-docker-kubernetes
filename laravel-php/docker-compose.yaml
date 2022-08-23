@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  server:
+    image: 'nginx:stable-alpine'
+    ports:
+      - '8000:80'
+    volumes:
+      - ./src:/var/www/html
+      # ro is read-only
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php
+      - mysql
+
+  php:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+    # delegated lets process run in the background in batches for better performances
+    # note that this folder is not being update frequently
+    volumes:
+      - ./src:/var/www/html:delegated
+
+  mysql:
+    platform: linux/x86_64
+    image: 'mysql:5.7'
+    env_file:
+      - .env
+
+  composer:
+    build:
+      context: ./dockerfiles
+      dockerfile: composer.dockerfile
+    volumes:
+      - ./src:/var/www/html
+
+  artisan:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+    volumes:
+      - ./src:/var/www/html
+    entrypoint: ['php', '/var/www/html/artisan']
+
+  npm:
+    image: node:14
+    working_dir: /var/www/html/
+    entrypoint: ['npm']
+    volumes:
+      - ./src:/var/www/html

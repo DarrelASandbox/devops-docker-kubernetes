@@ -9,6 +9,7 @@
     <li><a href="#multi-containers-app">Multi-Containers App</a></li>
     <li><a href="#docker-compose">Docker Compose</a></li>
     <li><a href="#utility-containers">Utility Containers</a></li>
+    <li><a href="#laravel--php">Laravel & PHP</a></li>
   </ol>
 </details>
 
@@ -417,6 +418,33 @@ drwxr-xr-x 13 scott scott 4096 Oct 31 16:23 ../
 > Use `delegated`: when docker container performs changes, host is in read only mode.
 >
 > Use `default`: When both container and host actively and continuously perform changes on data.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Laravel & PHP
+
+![laravel-php-target-setup](./diagrams/laravel-php-target-setup.png)
+
+- [Docker Hub nginx image](https://hub.docker.com/_/nginx/)
+- [Laravel installation](https://laravel.com/docs/9.x/installation)
+
+- Instead of stating the `ports` under php service in `docker-compose.yaml` file:
+
+```dockerfile
+services:
+  ...
+  php:
+    ...
+    ports:
+      - '3000:9000'
+```
+
+- We can change the port from 3000 to 9000 in the `nginx.conf` file like so `fastcgi_pass php:9000;`
+- Because we have container to container communication via network instead of localhost
 
 &nbsp;
 
