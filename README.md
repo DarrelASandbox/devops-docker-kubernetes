@@ -10,6 +10,8 @@
     <li><a href="#docker-compose">Docker Compose</a></li>
     <li><a href="#utility-containers">Utility Containers</a></li>
     <li><a href="#laravel--php">Laravel & PHP</a></li>
+    <li><a href="#deployment">Deployment</a></li>
+    <li><a href="#aws-ec2">AWS EC2</a></li>
   </ol>
 </details>
 
@@ -445,6 +447,116 @@ services:
 
 - We can change the port from 3000 to 9000 in the `nginx.conf` file like so `fastcgi_pass php:9000;`
 - Because we have container to container communication via network instead of localhost
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Deployment
+
+|                                                 Development                                                  |                                            Production                                             |
+| :----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------: |
+|                                       Isolated, standalone environment                                       |                                 Isolated, standalone environment                                  |
+|                               Reproducible environment, easy to share and use                                |                          Reproducible environment, easy to share and use                          |
+|                                 Bind Mounts shouldn’t be used in Production!                                 |                   Containerized apps might need a build step (e.g. React apps)                    |
+| Multi-Container projects might need to be split (or should be split) across multiple hosts / remote machines |                 Trade-offs between control and responsibility might be worth it!                  |
+|              Containers should encapsulate the runtime environment but not necessarily the code              | A container should really work standalone, you should NOT have source code on your remote machine |
+|             Use “Bind Mounts” to provide your local host project files to the running container              |                          Use COPY to copy a code snapshot into the image                          |
+|                         Allows for instant updates without restarting the container                          |        Ensures that every image runs without any extra, surrounding configuration or code         |
+
+![basic-standalone-nodejs-app](./diagrams/basic-standalone-nodejs-app.png)
+
+- <b>Hosting Providers</b>
+  - Amazon Web Services (AWS)
+  - Microsoft Azure
+  - Google Cloud
+
+|                        <b>Option 1: </b>Deploy Source                        |          <b>Option 2: </b>Deploy Built Image          |
+| :--------------------------------------------------------------------------: | :---------------------------------------------------: |
+|                        Build image on remote machine                         | Build image before deployment (e.g. on local machine) |
+| Push source code to remote machine, `run docker build` and then `docker run` |               Just execute `docker run`               |
+|                            Unnecessary complexity                            |         Avoid unnecessary remote server work          |
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## AWS EC2
+
+- A service that allows you to spin up and manage your own remote machines
+  1. Create and launch EC2 instance, VPC and security group
+  2. Configure security group to expose all required ports to WWW
+  3. Connect to instance (SSH), install Docker and run container
+
+1. Launch an instance for EC2
+2. <b>Application and OS Images (Amazon Machine Image): </b>Amazon Linux AMI 64-bit (x86)
+3. <b>Instance type: </b>t2.micro (Free tier eligible)
+4. <b>Key pair: </b>Create a new key pair
+   1. <b>Key pair name: </b>Enter key pair name
+   2. <b>Key pair type: </b>RSA
+   3. <b>Private key file format: </b>.pem
+   4. Save the .pem file into the project root directory
+   5. <b>Take note that anyone with the file will be able to connect to your remote machine</b>
+5. <b>Network: </b>vpc
+6. Launch instance
+7. View all instances
+8. <b>Select your instance, connect and follow the steps under SSH client</b>
+9. `sudo yum update -y` to ensure all essential packages on the remote machine are updated
+10. `sudo amazon-linux-extras install docker`
+    - [Docker engine installation for other providers](https://docs.docker.com/engine/install/)
+11. `sudo service docker start`
+12. `docker tag CONTAINER darrela/CONTAINER` e.g. `docker tag dep-basic-nodeapp darrela/dep-basic-nodeapp`
+13. Push image to Docker Hub
+14. `sudo docker run --rm -dp 80:80 darrela/dep-basic-nodeapp`
+    - Refer to Ryan's comment below for Apple M1
+15. Under <b>Network & Security - Security Groups: </b>
+    - Edit inbound rules
+    - <b>Add rule: </b>HTTP & Anywhere-IPv4
+    - Save rules
+16. Go to Public IPv4 address
+17. Use `sudo docker pull` to update the image after rebuilding and pushing to Docker Hub
+
+- "DIY" Approach disadvantage
+  - We fully “own” the remote machine è We’re responsible for it (and it’s security)!
+    - Keep essentials software updated
+    - Manage network and security groups/ firewall
+  - SSHing into the machine to manage it can be annoying
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>Ryan: </b>The requested image's platform (linux/arm64/v8) does not match the detected host platform (linux/amd64) and no specific platform was requested
+>
+> If you built the Docker image on a MacBook with the M1 chip, and you try to run the Docker image on your EC2, you'll get the error above.
+>
+> To solve this, rebuild the image locally using this command:
+>
+> `docker buildx build --platform linux/amd64 -t node-dep-example .`
+>
+> You're essentially forcing the Docker image to be rebuilt using the specified architecture (linux/amd64) vs. using the detected architecture of your MacBook (linux/arm64/v8), which simply can't run on the selected EC2.
+>
+> Now tag the image with your Docker hub repository name as before:
+>
+> `docker tag node-dep-example <your-account>/node-example-1`
+>
+> And push the new image to Docker hub as before:
+>
+> `docker push <your-account>/node-example-1`
+>
+> Switch back to the EC2 and delete the local version of the Docker image it previously downloaded:
+>
+> `sudo docker rmi <your-account>/node-example-1`
+>
+> Last, run the newly built Docker image on the EC2, which should now work:
+>
+> `sudo docker run -d --rm -p 80:80 <your-account>/node-example-1`
 
 &nbsp;
 
