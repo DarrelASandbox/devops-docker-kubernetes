@@ -587,6 +587,9 @@ services:
 10. <b>To update: </b>Push the new image to Docker Hub
 11. Create new revision of Task Definition or directly under Actions click Update Service > Force new Deployment
 
+- <b>Reference: </b>dep-multi-containers
+- Docker compose is good for local machine. For deployment, host providers may need different requirements.
+
 &nbsp;
 
 ---
