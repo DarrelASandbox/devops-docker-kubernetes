@@ -587,8 +587,37 @@ services:
 10. <b>To update: </b>Push the new image to Docker Hub
 11. Create new revision of Task Definition or directly under Actions click Update Service > Force new Deployment
 
+&nbsp;
+
 - <b>Reference: </b>dep-multi-containers
-- Docker compose is good for local machine. For deployment, host providers may need different requirements.
+- Docker compose is good for local machine. But there will be limitations for deployment into the cloud whereby host providers may need different requirements and potentially there are multiple different machines working together.
+- AWS ECS look for images from Docker Hub
+
+1. ECS > Clusters > Create Cluster
+2. Networking only > Next step
+3. <b>Cluster name</b>
+4. <b>Create VPC: </b>Create a new VPC for this cluster
+5. Create > View Cluster > Task Definitions > Create new Task Definition > Next step
+6. Input Task Definition Name
+7. <b>Task Role: </b>ecsTaskExecutionRole
+8. Input <b>Task memory (GB)</b> & <b>Task CPU (vCPU)</b>
+9. <b>Container definitions: </b> Add container
+10. <b>Container name</b> & <b>Image</b>
+11. <b>Port mappings</b>
+12. <b>ENVIRONMENT: </b>
+    - <b>Command: </b>"node,app.js"
+    - <b>Environment variables: </b> <i>MONGODB_URL</i> can be set as "localhost" on AWS ECS
+      - The containers can communicate with each other under the "localhost" key
+13. Add
+14. Add remaining container(s)
+15. Create > View task definition > Cluster > Services tab > Create
+16. <b>Launch type: </b>FARGATE
+17. Input Task Definition, Cluster, Service name & Number of tasks (1)
+18. Input Cluster VPC, Subnets & Auto-assign public IP
+19. <b>Load balancer type: </b>Application Load Balancer
+    - If required, Create Application Load Balancer
+      - input Load balancer name
+      - Under target group, target type select IP addresses
 
 &nbsp;
 
