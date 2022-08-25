@@ -1,4 +1,5 @@
 ```sh
+# AWS EC2
 docker build -t dep-basic-nodeapp .
 docker run --rm --name dep-basic-nodeapp -dp 80:80 dep-basic-nodeapp
 
@@ -7,4 +8,9 @@ docker buildx build --platform linux/amd64 -t dep-basic-nodeapp .
 # For Docker Hub
 docker tag dep-basic-nodeapp darrela/dep-basic-nodeapp
 docker push darrela/dep-basic-nodeapp
+```
+
+```sh
+# AWS ECS
+
 ```

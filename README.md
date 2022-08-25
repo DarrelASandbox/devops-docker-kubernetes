@@ -12,6 +12,7 @@
     <li><a href="#laravel--php">Laravel & PHP</a></li>
     <li><a href="#deployment">Deployment</a></li>
     <li><a href="#aws-ec2">AWS EC2</a></li>
+    <li><a href="#aws-ecs">AWS ECS</a></li>
   </ol>
 </details>
 
@@ -487,6 +488,7 @@ services:
 
 ## AWS EC2
 
+- <b>Reference: </b>dep-basic-nodeapp
 - A service that allows you to spin up and manage your own remote machines
   1. Create and launch EC2 instance, VPC and security group
   2. Configure security group to expose all required ports to WWW
@@ -557,6 +559,33 @@ services:
 > Last, run the newly built Docker image on the EC2, which should now work:
 >
 > `sudo docker run -d --rm -p 80:80 <your-account>/node-example-1`
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## AWS ECS
+
+|                                          EC2                                           |                                              ECS                                              |
+| :------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------: |
+| You need to create them, manage them, keep them updated, monitor them, scale them etc. | Creation, management, updating is handled automatically, monitoring and scaling is simplified |
+|                  Great if you’re an experienced admin / cloud expert                   |                   Great if you simply want to deploy your app / containers                    |
+
+- <b>Reference: </b>dep-basic-nodeapp
+
+1. Get Started
+2. <b>custom</b> Configure
+3. <b>Container name: </b>dep-basic-nodeapp
+4. <b>Image: </b>darrela/dep-basic-nodeapp
+5. <b>Port mappings: </b>Refer to server.js/app.js port e.g. 80
+6. <b>Log configuration: </b>Check Auto-configure CloudWatch Logs
+7. Next (Optional: Application Load Balancer)
+8. Next > Create > View Service
+9. Task > Task ID > Public IP
+10. <b>To update: </b>Push the new image to Docker Hub
+11. Create new revision of Task Definition or directly under Actions click Update Service > Force new Deployment
 
 &nbsp;
 
