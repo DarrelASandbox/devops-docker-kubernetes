@@ -52,11 +52,7 @@
   - Docker Hub
   - Docker Compose
 
-&nbsp;
-
----
-
-&nbsp;
+![docker-core-concepts](./diagrams/docker-core-concepts.png)
 
 - Foundation
 
@@ -722,6 +718,32 @@ services:
 > <b>Maximilian: </b>You can use Express.js to serve your React app. But if you just build a React app for production, it doesn't come without any default server. It only has a development server (based on NodeJS) during development - you can't use that (or you shouldn't) for production.
 >
 > Hence you need to bring your own server for the production build. Either your own Express server, sure, or - if you don't want to write all that code - simply a Nginx server.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+- Develop your application in the same environment you’ll run it in after deployment
+
+|                   Local Host / Development                    |                       Remote Host / Production                       |
+| :-----------------------------------------------------------: | :------------------------------------------------------------------: |
+| Isolated, encapsulated, reproducible development environments |          Isolated, encapsulated, reproducible environments           |
+|               No dependency or software clashes               | Easy updates: Simply replace a running container with an updated one |
+
+- It’s perfectly fine to use Docker (and Docker Compose) for local development!
+  - Encapsulated environments for different projects
+  - No global installation of tools
+  - Easy to share and re-produce
+- Deployment Considerations
+  - Replace Bind Mounts with Volumes or COPY
+  - Multiple containers might need multiple hosts
+  - But they can also run on the same host (depends on application)
+  - Multi-stage builds help with apps that need a build step
+  - Control vs Ease-of-use
+    - <b>Remote server, install Docker and run your containers: </b>Full control but you also need to manage everything
+    - <b>Managed service: </b>Less control and extra knowledge required but easier to use, less responsibility
 
 &nbsp;
 
