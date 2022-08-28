@@ -2,7 +2,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#about-the-project">About The Project</a></li>
-    <li><a href="#basics">Basics</a></li>
+    <li><a href="#docker-basics">Docker Basics</a></li>
     <li><a href="#images--containers">Images & Containers</a></li>
     <li><a href="#data--volumes">Data & Volumes</a></li>
     <li><a href="#networking">Networking</a></li>
@@ -13,6 +13,7 @@
     <li><a href="#deployment">Deployment</a></li>
     <li><a href="#aws-ec2">AWS EC2</a></li>
     <li><a href="#aws-ecs">AWS ECS</a></li>
+    <li><a href="#kubernetes-basics">Kubernetes Basics</a></li>
   </ol>
 </details>
 
@@ -27,7 +28,7 @@
 
 &nbsp;
 
-## Basics
+## Docker Basics
 
 - [Docker](https://www.docker.com/) is a container technology: A tool for creating and managing containers.
   - <b>Environment: </b> The runtimes, languages & frameworks
@@ -52,7 +53,7 @@
   - Docker Hub
   - Docker Compose
 
-![docker-core-concepts](./diagrams/docker-core-concepts.png)
+![docker-core-concepts](diagrams/docker-core-concepts.png)
 
 - Foundation
 
@@ -89,11 +90,11 @@
   - A container is base on an image
 - Creating & Managing Containers
 
-![image-layers](./diagrams/image-layers.png)
+![image-layers](diagrams/image-layers.png)
 
 &nbsp;
 
-![image-containers](./diagrams/image-containers.png)
+![image-containers](diagrams/image-containers.png)
 
 |                         Images                         |                      Containers                      |
 | :----------------------------------------------------: | :--------------------------------------------------: |
@@ -208,11 +209,11 @@
 - Container to local host machine
 - Container to container communication
 
-![containers-and-network-requests](./diagrams/containers-and-network-requests.png)
+![containers-and-network-requests](diagrams/containers-and-network-requests.png)
 
 &nbsp;
 
-![docker-ip-resolving](./diagrams/docker-ip-resolving.png)
+![docker-ip-resolving](diagrams/docker-ip-resolving.png)
 
 > Docker Networks actually support different kinds of <b>"Drivers"</b> which influence the behavior of the Network. The default driver is the <b>"bridge" driver</b> - it provides the behavior shown in this module (i.e. Containers can find each other by name if they are in the same Network).
 >
@@ -304,7 +305,7 @@
 
 ## Utility Containers
 
-![utility-containers](./diagrams/utility-containers.png)
+![utility-containers](diagrams/utility-containers.png)
 
 > <b>Scott: </b>Utility Containers and Linux
 > I wanted to point out that on a Linux system, the Utility Container idea doesn't quite work as you describe it. In Linux, by default Docker runs as the "Root" user, so when we do a lot of the things that you are advocating for with Utility Containers the files that get written to the Bind Mount have ownership and permissions of the Linux Root user. (On MacOS and Windows10, since Docker is being used from within a VM, the user mappings all happen automatically due to NFS mounts.)
@@ -426,7 +427,7 @@ drwxr-xr-x 13 scott scott 4096 Oct 31 16:23 ../
 
 ## Laravel & PHP
 
-![laravel-php-target-setup](./diagrams/laravel-php-target-setup.png)
+![laravel-php-target-setup](diagrams/laravel-php-target-setup.png)
 
 - [Docker Hub nginx image](https://hub.docker.com/_/nginx/)
 - [Laravel installation](https://laravel.com/docs/9.x/installation)
@@ -463,7 +464,7 @@ services:
 |             Use “Bind Mounts” to provide your local host project files to the running container              |                          Use COPY to copy a code snapshot into the image                          |
 |                         Allows for instant updates without restarting the container                          |        Ensures that every image runs without any extra, surrounding configuration or code         |
 
-![basic-standalone-nodejs-app](./diagrams/basic-standalone-nodejs-app.png)
+![basic-standalone-nodejs-app](diagrams/basic-standalone-nodejs-app.png)
 
 - <b>Hosting Providers</b>
   - Amazon Web Services (AWS)
@@ -638,7 +639,7 @@ services:
       - <b>Container path: </b>`/data/db` (Will need to change if using mysql or other dialects)
     - Update > Create > Actions > Update Service > Force new deployment > Skip to review > Update Service > View Service
 
-![dep-current-app-architecture](./diagrams/dep-current-app-architecture.png)
+![dep-current-app-architecture](diagrams/dep-current-app-architecture.png)
 
 1. Use MongoDB Atlas
    - If required remove from ECS
@@ -675,7 +676,7 @@ services:
 - Apps with Development Servers & Build Steps
   - Some apps / projects require a build step e.g. optimization script that needs to be executed AFTER development but BEFORE deployment
 
-![apps-with-development-servers-and-build-steps](./diagrams/apps-with-development-servers-and-build-steps.png)
+![apps-with-development-servers-and-build-steps](diagrams/apps-with-development-servers-and-build-steps.png)
 
 - Multi-Stage Builds
   - One Dockerfile, Multiple Build / Setup Steps (“Stages”)
@@ -744,6 +745,93 @@ services:
   - Control vs Ease-of-use
     - <b>Remote server, install Docker and run your containers: </b>Full control but you also need to manage everything
     - <b>Managed service: </b>Less control and extra knowledge required but easier to use, less responsibility
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Kubernetes Basics
+
+- [Kubernetes](https://kubernetes.io/), also known as K8s, is an open-source system for automating deployment, scaling, and management of containerized applications.
+- Manual deployment of Containers is hard to maintain, error-prone and annoying
+- Even beyond security and configuration concerns
+
+|                          Problem                           |                 AWS ECS Solution                  |
+| :--------------------------------------------------------: | :-----------------------------------------------: |
+|  Containers might crash / go down and need to be replaced  | Container health checks + automatic re-deployment |
+| We might need more container instances upon traffic spikes |                    Autoscaling                    |
+|       Incoming traffic should be distributed equally       |                   Load balancer                   |
+
+- Using a specific cloud service locks us into that service
+- You need to learn about the specifics, services and config options of another provider if you want to switch
+- Just knowing Docker isn’t enough!
+
+&nbsp;
+
+- <b>Kubernetes: </b>An open-source system (and de-facto standard) for orchestrating container deployments
+  - Automatic Deployment
+  - Scaling & Load Balancing
+  - Management
+- <b>Why?</b>
+  - Kubernetes Configuration (i.e. desired architecture – number of running containers etc.)
+    - Standardized way of describing the to-be-created and to-be-managed resources of the Kubernetes Cluster
+    - Cloud-provider-specific settings can be added
+  - Some Providerspecific Setup or Tool
+  - Any Cloud Provider or Remote Machines (e.g. could also be your own datacenter)
+- Kubernetes is like Docker-Compose for multiple machines
+
+|                            IS NOT                            |                   IS                    |
+| :----------------------------------------------------------: | :-------------------------------------: |
+|              It’s not a cloud service provider               |       It’s an open-source project       |
+|        It’s not a service by a cloud service provider        |    It can be used with any provider     |
+| It’s not restricted to any specific (cloud) service provider |    It can be used with any provider     |
+|       It’s not just a software you run on some machine       | It’s a collection of concepts and tools |
+|              It’s not an alternative to Docker               |    It works with (Docker) containers    |
+|                   It’s not a paid service                    |     It’s a free open-source project     |
+
+![kubernetes-architecture](diagrams/kubernetes-architecture.png)
+
+|                                What Kubernetes Will Do                                 |                  What You Need To Do / Setup (i.e. what Kubernetes requires)                   |
+| :------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------: |
+|                    Create your objects (e.g. Pods) and manage them                     |               Create the Cluster and the Node Instances (Worker + Master Nodes)                |
+|                    Monitor Pods and re-create them, scale Pods etc.                    |          Setup API Server, kubelet and other Kubernetes services / software on Nodes           |
+| Kubernetes utilizes the provided (cloud) resources to apply your configuration / goals | Create other (cloud) provider resources that might be needed (e.g. Load Balancer, Filesystems) |
+
+![worker-node.png](diagrams/worker-node.png)
+
+&nbsp;
+
+![master-node.png](diagrams/master-node.png)
+
+|             |                                                         Core Components                                                         |
+| :---------: | :-----------------------------------------------------------------------------------------------------------------------------: |
+|   Cluster   |   A set of Node machines which are running the Containerized Application (Worker Nodes) or control other Nodes (Master Node)    |
+|    Nodes    | Physical or virtual machine with a certain hardware capacity which hosts one or multiple Pods and communicates with the Cluster |
+| Master Node |                                  Cluster Control Plane, managing the Pods across Worker Nodes                                   |
+| Worker Node |                                        Hosts Pods, running App Containers (+ resources)                                         |
+|    Pods     |                     Pods hold the actual running App Containers + their required resources (e.g. volumes).                      |
+| Containers  |                                                   Normal (Docker) Containers                                                    |
+|  Services   |                      A logical set (group) of Pods with a unique, Pod- and Containerindependent IP address                      |
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>The: </b>Hi! I have a question about pods
+>
+> If pod can hold multiple containers, so why we need to use multiple pods in the worker node? Why don't we put all the containers that we use in a "service" in a single pod?
+
+> <b>Zhing Jieh Jack: </b>One important characteristic I can think of off the top of my head is: A pod resides in a worker node; If we put all types of containers e.g frontend, backend, database, into a pod, then there's a single point of failure. Placing those containers in separate pods allow them to be in diff machine/worker node, eg frontend, backend and database each may reside in diff machines/nodes.
+>
+> And what if I (administrator) want to scale only the frontend? We certainly don't want to scale other "services/containers" in this case.
+>
+> I believe that a K8s pod is meant to do one thing instead of multiple different things. Of course that one thing can be multiple containers (a sidecar proxy). But for a collection of containers doing different things (e.g frontend, backend, database) they should each be in a separate pod.
+>
+> I'm sure there are other reasons, i'm happy to have anyone add on to my answer :)
 
 &nbsp;
 
