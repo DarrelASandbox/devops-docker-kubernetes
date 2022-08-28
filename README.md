@@ -644,6 +644,32 @@ services:
 
 ![dep-current-app-architecture](./diagrams/dep-current-app-architecture.png)
 
+1. Use MongoDB Atlas
+   - If required remove from ECS
+     - mongodb container
+     - volume from
+     - At Amazon EFS, delete file system
+     - At EC2, delete Security group
+2. Update backend container environment variables
+3. Create > Actions > Update Service > Force new deployment > Skip to review > Update Service > View Service
+
+![dep-mongodb-atlas-architecture](diagrams/dep-mongodb-atlas-architecture.png)
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>Ivo: </b> Some other considerations when running this setup in an actual production environment
+>
+> I just wanted to add some other considerations when running this setup (development & production database on an external machine/cluster):
+>
+> - running a development database on some external server can get very cumbersome when you start writing tests for your application. It can add considerable latency to test related tasks like seeding the database with test data and in general running tests that require a database connection
+> - using the same database machine/cluster for development as well as production with the only difference being the database name will inevitably lead to someone making a mistake with the database name and overwriting the entire production database with development data
+>
+> I do realize that for the sake of simplicity and conformity in database versions you chose to take this path Max. I also realise that my considerations are somewhat outside the scope of this course, but on the other hand: I guess if you are taking this course as a student, you are likely planning to someday put the learned information to use in an actual production environment ;)
+
 &nbsp;
 
 ---
