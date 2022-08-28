@@ -675,3 +675,56 @@ services:
 ---
 
 &nbsp;
+
+- Apps with Development Servers & Build Steps
+  - Some apps / projects require a build step e.g. optimization script that needs to be executed AFTER development but BEFORE deployment
+
+![apps-with-development-servers-and-build-steps](./diagrams/apps-with-development-servers-and-build-steps.png)
+
+- Multi-Stage Builds
+  - One Dockerfile, Multiple Build / Setup Steps (“Stages”)
+  - Stages can copy results (created files and folders) from each other
+  - You can either build the complete image or select individual stages
+  - You can use double `FROM` in the Dockerfile
+    - Refer to `Dockerfile.prod` file in frontend folder in dep-multi-containers folder
+
+1. Task Definitions > Create new revision > Add container
+2. Input Container name, Image & Port mappings
+3. STARTUP DEPENDENCY ORDERING set backend container name with Condition "SUCCESS"
+4. Add
+5. We will need a new Task Definition if both frontend and backend are listening to the same port.
+   - Input Task definition name, Task role, Task memory (GB), Task CPU (vCPU)
+   - This means we will have 2 different URLs for both frontend and backend.
+6. Setup a new load balancer for frontend at EC2 page > Create Application Load Balancer
+   - Input Load balancer name, VPC under network mapping & Security groups
+   - Setup a new target group with target type IP addresses
+7. Create load balancer > Copy DNS name at EC2 Load Balancer page
+8. Input `backendUrl` in `App.js` file in frontend folder in dep-multi-containers folder
+9. After rebuilding frontend image, push to Docker Hub
+10. At ECS page, from Task Definitions, Create Service for frontend
+11. <b>Launch type: </b>FARGATE
+12. Input Service name, Number of tasks then Next Step
+13. Input Cluster VPC, Subnets & Security groups
+14. <b>Load balancer typer: </b>Application Load Balancer
+15. Input Load balancer name > Add to load balancer
+16. Select Target group name > Next Step > Next Step > Create Service
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>Javed: </b>Why do we need an nginx server for react code?
+>
+> I thought react just builds a bundle.js file thats served to the user from the express server. Why do we need an express server and an nginx server?
+
+> <b>Maximilian: </b>You can use Express.js to serve your React app. But if you just build a React app for production, it doesn't come without any default server. It only has a development server (based on NodeJS) during development - you can't use that (or you shouldn't) for production.
+>
+> Hence you need to bring your own server for the production build. Either your own Express server, sure, or - if you don't want to write all that code - simply a Nginx server.
+
+&nbsp;
+
+---
+
+&nbsp;
