@@ -489,6 +489,9 @@ services:
 ## AWS EC2
 
 - <b>Reference: </b>dep-basic-nodeapp
+- Scaling & managing availability can be challenging
+- Performance (also during traffic spikes) could be bad
+- Taking care about backups and security can be challenging
 - A service that allows you to spin up and manage your own remote machines
   1. Create and launch EC2 instance, VPC and security group
   2. Configure security group to expose all required ports to WWW
@@ -618,6 +621,28 @@ services:
     - If required, Create Application Load Balancer
       - input Load balancer name
       - Under target group, target type select IP addresses
+      - Under Health check settings, <b>Path</b>: "/goals" <i>For dep-multi-containers</i>
+      - <b>Security groups:</b> Default + Goals
+20. <b>DNS Name: </b>ecs-lb-912341198.ap-southeast-1.elb.amazonaws.com
+21. Using EFS Volumes with ECS
+    - Task Definitions > Create new revision > Volumes (Add Volume)
+    - <b>Name: </b>Data
+    - <b>Volume type: </b>Elastic File System (EFS)
+    - Go to Amazon EFS console > Create file system
+    - Select VPC > Customize > Next
+    - Go to EC2 on a new tab > Security Groups > Create security group
+    - <b>Add Inbound rules: </b>NFS & pick your Custom <i>Goals</i> Source
+    - Without the security group and inbound rule, the containers and tasks in ECS would not be able to communicate with EFS
+    - Create security group
+    - Back at file system, under Network access settings pick the new security group
+    - Next > Next > Create
+    - Back at Amazon ECS (Add volume modal) under <b>File system ID</b> select the new file system > Add
+    - Click database <i>(mongodb)</i> > STORAGE AND LOGGING > Mount points
+      - <b>Source volume: </b>`data`
+      - <b>Container path: </b>`/data/db` (Will need to change if using mysql or other dialects)
+    - Update > Create > Actions > Update Service > Force new deployment > Skip to review > Update Service > View Service
+
+![dep-current-app-architecture](./diagrams/dep-current-app-architecture.png)
 
 &nbsp;
 
