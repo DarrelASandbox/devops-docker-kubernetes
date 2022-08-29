@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: k8s-second-ser
+  labels:
+    group: deleteByLabel
+
+spec:
+  selector:
+    app: k8s-second-pod
+    # Can omit `labels` key unlike in deployment.yaml
+    # because it is uses `label` by default
+    # Can ignore `tier` label
+
+  ports:
+    - protocol: 'TCP'
+      port: 80
+      targetPort: 8080
+
+  type: LoadBalancer # Options: ClusterIp/ NodePort

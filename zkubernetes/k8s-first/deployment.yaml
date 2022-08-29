@@ -1,0 +1,34 @@
+# Declarative approach
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: k8s-second-dep
+  labels:
+    group: deleteByLabel
+
+spec:
+  replicas: 1 # 1 running pod
+  selector: # Control the deployment with the same label tagged with `app` & `tier`
+    matchLabels:
+      app: k8s-second-pod
+      tier: backend
+    # matchExpresssions:
+    #   - {key: app, oeprator: In, values: [k8s-first-pod, k8s-second-pod]}
+
+  template: # Always describe a Pod object (PodTemplateSpec) so we do not need `kind` keyword
+    metadata:
+      labels:
+        app: k8s-second-pod
+        tier: backend
+
+    spec:
+      containers:
+        - name: k8s-second-con
+          image: darrela/k8s-first:2 # Refer to image from imperative approach
+          # imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 3

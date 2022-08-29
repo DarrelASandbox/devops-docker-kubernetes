@@ -883,3 +883,56 @@ services:
 ---
 
 &nbsp;
+
+> <b>.</b>I'm coding along on video#193. I rolled back the revision, but the browser is still showing the wrong version in the UI.
+>
+> As per the video#193, I deployed the second version of the image, then I tried to roll back to first version again using `kubectl rollout undo deployment/first-app --to-revision=1`. The rollout is successful & I can see the same in dashboard too, but the app page is still showing the revision 2. Am I doing anything wrong?
+
+> <b>Justin</b>If you were working along these in tandem with Max, you likely did the same thing I did and pushed the updated version of app.js to `:latest`(see ~3:05 from the previous video) before he began explaining the need to provide a unique tag.
+>
+> It seems like an important thing to note that undoing a rollout in kubectl does not return a cached version of that revision, but instead re-fetches the image from registry with whatever tag that revision had associated to it.
+>
+> Doing some googling, it looks like an image's Digest is the only way to reflect an immutable image snapshot [(docs)](https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier). I tested passing the sha256 from 2 subsequent `docker push` calls for the image during update, and kubectl took the revision successfully (and respectively rolled back as expected). As someone newly exploring docker/k8s, I really hope production services are relying on these digests for deployments rather than the tags themselves (at least when using external dependencies that they cannot easily revert). There doesn't seem to be a lot of chatter around this being the pragmatic approach, however.
+>
+> EDIT: It looks like referencing the cached version is based on the `imagePullPolicy`. Since the first version did not have an explicit tag (or using `:latest`), Kubernetes applies an `Always` policy. In other words, if you're using explicit tags, you should be pulling from the cached version of that image if found locally unless you specify otherwise [(docs)](https://kubernetes.io/docs/concepts/configuration/overview/#container-images). I'm not sure if this helps in a production setting, as I'd imagine the deployment VM is instantiated in a completely different host when auto scaling / load balancing.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+|                               Imperative                               |                           Declarative                            |
+| :--------------------------------------------------------------------: | :--------------------------------------------------------------: |
+|                     `kubectl create deployment …`                      |                  `kubectl apply –f config.yaml`                  |
+| Individual commands are executed to trigger certain Kubernetes actions | A config file is defined and applied to change the desired state |
+|                 Comparable to using `docker run` only                  |     Comparable to using `Docker Compose` with compose files      |
+
+- Set resource definition in .yaml file
+- [Kubernetes - Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
+- [Kubernetes API - Deployment](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/)
+- [Kubernetes API - Service](https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/)
+
+> <b>Javed: </b>`ImagePullPolicy: Always` doesn't work for me unless deployment is deleted
+>
+> After checking on stackoverflow, I read setting it to always won't force a pull unless you shutdown and the start the deployment again. I tried following your instructions and it just said:
+
+```sh
+# kub-action-01-starting-setup$ kubectl apply -f=deployment.yml,service.yml
+# deployment.apps/second-app-deployment unchanged
+# service/backend unchanged
+```
+
+> So my new code wasnt reflected until I did a kubectl delete followed by apply
+
+> <b>Maximilian: </b>That is true - sorry for the confusion caused and thanks for sharing this, much appreciated!
+
+> <b>Émerson: </b>`kubectl rollout restart deployment/demo`
+>
+> [Source](https://stackoverflow.com/questions/40366192/kubernetes-how-to-make-deployment-to-update-image)
+
+&nbsp;
+
+---
+
+&nbsp;
