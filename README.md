@@ -838,3 +838,48 @@ services:
 ---
 
 &nbsp;
+
+- Kubernetes works with objects
+  - Created <b>imperatively</b> or <b>declaratively</b>
+
+### Pod Object
+
+- The smallest “unit” Kubernetes interacts with
+  - Contains and runs one or multiple containers
+    - The most common usecase is “one container per Pod”
+  - Pods contain shared resources (e.g. volumes) for all Pod containers
+  - Has a cluster-internal IP by default
+    - Containers inside a Pod can communicate via localhost
+- Pods are designed to be ephemeral: Kubernetes will start, stop and replace them as needed.
+- For Pods to be managed for you, you need a “Controller” (e.g. a “Deployment”)
+  - The volume inside the pod gets erased
+
+### Deployment Object
+
+- Controls (multiple) Pods
+  - You set a desired state, Kubernetes then changes the actual state
+    - Define which Pods and containers to run and the number of instances
+  - Deployments can be paused, deleted and rolled back
+  - Deployments can be scaled dynamically (and automatically)
+    - You can change the number of desired Pods as needed
+- Deployments manage a Pod for you, you can also create multiple Deployments
+- You therefore typically don’t directly control Pods, instead you use Deployments to set up the desired end state
+
+![kubectl-behind-the-scene](/diagrams/kubectl-behind-the-scene.png)
+
+### Service Object
+
+- Exposes Pods to the Cluster or Externally
+  - Pods have an internal IP by default – it changes when a Pod is replaced
+    - Finding Pods is hard if the IP changes all the time
+  - Services group Pods with a shared IP
+  - Services can allow external access to Pods
+    - The default (internal only) can be overwritten
+- Without Services, Pods are very hard to reach and communication is difficult
+- Reaching a Pod from outside the Cluster is not possible at all without Services
+
+&nbsp;
+
+---
+
+&nbsp;
