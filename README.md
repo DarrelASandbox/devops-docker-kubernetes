@@ -14,6 +14,7 @@
     <li><a href="#aws-ec2">AWS EC2</a></li>
     <li><a href="#aws-ecs">AWS ECS</a></li>
     <li><a href="#kubernetes-basics">Kubernetes Basics</a></li>
+    <li><a href="#kubernetes-data--volumes">Kubernetes Data & Volumes</a></li>
   </ol>
 </details>
 
@@ -930,6 +931,65 @@ services:
 > <b>Émerson: </b>`kubectl rollout restart deployment/demo`
 >
 > [Source](https://stackoverflow.com/questions/40366192/kubernetes-how-to-make-deployment-to-update-image)
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Kubernetes Data & Volumes
+
+- [Kubernetes - Volumes](https://kubernetes.io/docs/concepts/storage/volumes/)
+- Mount Volumes into Containers
+  - A broad variety of Volume types / drivers are supported
+    - ”Local” Volumes (i.e. on Nodes)
+    - Cloud-provider specific Volumes
+  - Volume lifetime depends on the <b>Pod lifetime</b>
+    - Volumes survive Container restarts (and removal)
+    - Volumes are removed when Pods are destroyed
+
+|                   Kubernetes                    |                     Docker                      |
+| :---------------------------------------------: | :---------------------------------------------: |
+|    Supports many different Drivers and Types    |       Basically no Driver / Type Support        |
+|     Volumes are not necessarily persistent      |     Volumes persist until manually cleared      |
+| Volumes survive Container restarts and removals | Volumes survive Container restarts and removals |
+
+- We will get the error `"message": "Failed to open file."`, when we `GET` the route `/error` while using more than 1 replica for deployment of `story-app`.
+  - Because the traffic has been redirected to another pod since we have error in the first pod.
+  - We can switch the `emptyDir` volume type in `deployment.yaml` file to [`hostPath`](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath).
+  - This allows multiple Pods to share the same path under the same host machine.
+  - Unlike `emptyDir`, it does not create an empty path so we need to specify the `path`.
+  - `hostPath` partially works around that in “OneNode” environments
+- [Kubernetes - Volume CSI](https://kubernetes.io/docs/concepts/storage/volumes/#csi)
+
+  - [Container Storage Interface (CSI) for Kubernetes GA](https://kubernetes.io/blog/2019/01/15/container-storage-interface-ga/)
+  - Flexible volume type which allows you to attach any storage solution, provided that there is intergration support for this type.
+  - e.g. [Amazon EFS CSI Driver](https://github.com/kubernetes-sigs/aws-efs-csi-driver)
+
+![persistent-volumes-pv-claims](diagrams/persistent-volumes-pv-claims.png)
+
+- <b>Persistent Volume</b> allows independency from the node
+- [PV resource model](https://github.com/kubernetes/design-proposals-archive/blob/main/scheduling/resources.md)
+- [Storage pros and cons: Block vs file vs object storage](https://www.computerweekly.com/feature/Storage-pros-and-cons-Block-vs-file-vs-object-storage)
+
+|                  ”Normal” Volumes                   |                       Persistent Volumes                        |
+| :-------------------------------------------------: | :-------------------------------------------------------------: |
+|     Volume is attached to Pod and Pod lifecycle     | Volume is a standalone Cluster resource (NOT attached to a Pod) |
+|        Defined and created together with Pod        |              Created standalone, claimed via a PVC              |
+| Repetitive and hard to administer on a global level |           Can be defined once and used multiple times           |
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>Armin: </b>Wouldn't there be a concurrency problem with multiple pods/containers accessing the same file?
+>
+> If I start, let's say, 3 pods, and I get requests on all 3 pods simultaneously, wouldn't that possibly cause problems with writing to the same file on different containers simultaneously? Would it not possibly cause an error when one pod writes to a file, where it is usually locked then, and the other container also tries to write to the same file simultaneously?
+
+> <b>Joel: </b>Yes this is not something you would do in production, instead you would use a single pod (like a database) with a persistent volume to share data between replicas.
 
 &nbsp;
 

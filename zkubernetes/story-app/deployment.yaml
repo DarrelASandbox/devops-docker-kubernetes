@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: story-app-dep
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: story-app-pod
+
+  template:
+    metadata:
+      labels:
+        app: story-app-pod
+
+    spec:
+      containers:
+        - name: story
+          image: darrela/story-app:latest
+          env:
+            - name: STORY_FOLDER
+              # value: 'story'
+              valueFrom:
+                configMapKeyRef:
+                  name: story-app-env
+                  key: folder # Key Name in env.yaml
+
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /app/story
+              name: story-app-vol
+
+      volumes:
+        - name: story-app-vol
+          # emptyDir: {}
+          # hostPath:
+          #   path: /data
+          #   type: DirectoryOrCreate
+          persistentVolumeClaim:
+            claimName: story-app-host-pvc

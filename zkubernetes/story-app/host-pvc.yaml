@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+
+metadata:
+  name: story-app-host-pvc
+spec:
+  # "Dynamic Volume Provisioning" allows us to claim by resources
+  # Currently we will stick to "Static Provisioning"
+  volumeName: story-app-host-pv
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 1Gi # The maximum value is defined in `host-pv.yaml`
+
