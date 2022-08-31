@@ -13,9 +13,21 @@
     <li><a href="#deployment">Deployment</a></li>
     <li><a href="#aws-ec2">AWS EC2</a></li>
     <li><a href="#aws-ecs">AWS ECS</a></li>
-    <li><a href="#kubernetes-basics">Kubernetes Basics</a></li>
+    <li><a href="#kubernetes-basics">Kubernetes Basics</a>
+      <ol>
+        <li><a href="#pod-object">Pod Object</a></li>
+        <li><a href="#deployment-object">Deployment Object</a></li>
+        <li><a href="#service-object">Service Object</a></li>
+      </ol>
+    </li>
     <li><a href="#kubernetes-data--volumes">Kubernetes Data & Volumes</a></li>
     <li><a href="#kubernetes-networking">Kubernetes Networking</a></li>
+    <li><a href="#kubernetes-deployment">Kubernetes Deployment</a>
+      <ol>
+        <li><a href="#aws-eks">AWS EKS</a></li>
+        <li><a href="#adding-efs-as-a-volume-with-the-csi-volume-type">Adding EFS as a Volume (with the CSI Volume Type)</a></li>
+      </ol>
+    </li>
   </ol>
 </details>
 
@@ -999,7 +1011,7 @@ services:
 
 &nbsp;
 
-### Kubernetes Networking
+## Kubernetes Networking
 
 - <b>Reference: </b>task-app
 - [CoreDNS](https://coredns.io/)
@@ -1009,6 +1021,138 @@ services:
 
 ![task-app](/diagrams/task-app-pod-internal.png)
 ![task-app](/diagrams/task-app-cluster-internal.png)
+
+&nbsp;
+
+---
+
+&nbsp;
+
+## Kubernetes Deployment
+
+- <b>Reference: </b>dep-aws-eks
+- Custom Data Center
+  - Install + configure everything on your own
+    - Machines
+    - Kubernetes Software
+- Cloud Provider
+  - Install + configure most things on your own
+    - Create + connect machines
+    - Install + configure software
+    - Manually or via [kops](https://github.com/kubernetes/kops) etc
+  - Use a managed service
+    - Define cluster architecture
+    - Services like AWS EKS
+
+|         AWS EKS (Elastic Kubernetes Service)         |    AWS ECS (Elastic Container Service)     |
+| :--------------------------------------------------: | :----------------------------------------: |
+|      Managed service for Kubernetes deployments      | Managed service for Container deployments  |
+|    No AWS-specific syntax or philosophy required     | AWS-specific syntax and philosophy applies |
+| Use standard Kubernetes configurations and resources | Use AWS-specific configuration andconcepts |
+
+### AWS EKS
+
+1. Create Cluster + Nodes
+2. Connect kubectl to AWS EKS Cluster
+3. `kubectl apply …`
+4. Optional: Add additional AWS resources (e.g. AWS EFS)
+
+&nbsp;
+
+---
+
+&nbsp;
+
+> <b>Brenton: </b> How do you remove AWS resources?
+>
+> In case this helps someone else, AWS Support got back to me with this [link](https://docs.aws.amazon.com/eks/latest/userguide/delete-cluster.html) for instructions on how to remove resources for k8s clusters:
+>
+> As before, following the instructions and trying to delete them through the AWS Console did not work and I kept running into errors that didn't make sense and what looked like hanging operations when trying to delete resources.
+>
+> Finally had some luck after installing the eksctl cli tool on my machine and running the following commands:
+> (first delete services with an external IP address assigned with kubectl):
+
+```sh
+kubectl get svc --all-namespaces (check which ones have external IP values)
+kubectl delete svc users-service
+eksctl delete cluster --name kub-dep-demo
+```
+
+> I'm asking for confirmation from AWS if that really for real deleted everything and I won't get zombie instances (and charges) spinning back up. This was an expensive lesson, so hopefully it will save someone else from the trouble and surprise charges.
+>
+> <b>Update: </b>confirmed that worked. If you have trouble in the gui console, just use eksctl.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+1. Add cluster > Create > Cluster configuration
+2. Create Cluster service role if required
+   - [IAM is Free](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html)
+   - IAM Console > Roles > Create role > AWS Service > <b>EKS - Cluster</b> > Next > Next
+   - <b>Role name: </b>eksClusterRole
+   - Create role
+3. <b>Cluster service role: </b>eksClusterRole
+4. Next > Open CloudFormation in new tab > Create stack
+   - From [Creating a VPC link](https://docs.aws.amazon.com/eks/latest/userguide/creating-a-vpc.html#create-vpc),
+   - copy & paste `IPv4` url into <b>Amazon S3 URL</b> under <b>Specify template</b>
+   - Next > Input <b>Stack name</b> > Next > Create stack
+5. Back at creating EKS cluster select the new VPC
+6. <b>Cluster endpoint access</b> pick "Public and private"
+7. Next > Next > Create
+8. Back on your pc, navigate to your `.kube` hidden folder from your user folder and open the `config` file
+   - Duplicate the `config` and name it as `config.minikube` so we can talk to minikube again.
+   - Edit current `config` file to communicate with EKS with [AWS CLI](https://aws.amazon.com/cli/)
+   - Open profile `Security credentials` in a new tab
+   - Under `Access keys (access key ID and secret access key)` > Create New Access Key > Download Key File
+   - In your shell, input `aws configure`
+   - Input <b>AWS Access Key ID</b>, <b>AWS Secret Access Key</b> & <b>Default region name</b>: "ap-southeast-1"
+   - Enter > Check that <b>Cluster info status</b> is "Active"
+   - In your shell input `aws eks --region ap-southeast-1 update-kubeconfig --name dep-aws-eks`
+     - The config is now set for communicating with <b>AWS EKS Cluster</b> instead of <b>Minikube Cluster</b>
+9. Back Cluster Detail, <b>Compute tab</b>, click <b>Add node group</b>
+10. <b>Configure node group: </b>Input Name & Node IAM Role
+11. Create Node IAM role if required
+    - The worker node which is essentially part of EC2 instances require permission such as logging or connect to some services
+    - IAM Console > Roles > Create role > AWS Service > <b>EC2</b> > Next
+    - Add <b>"AmazonEKSWorkerNodePolicy"</b>, "<b>AmazonEKS_CNI_Policy"</b> & <b>"AmazonEC2ContainerRegistryReadOnly"</b>
+    - <b>Role name: </b>eksNodeGroup
+    - Create role
+12. <b>Node IAM role: </b>eksNodeGroup
+13. Next > Select an instance
+    - t3.micro is the cheapest
+    - But select t3.small as schedulling pods on t3.micro might fail and application can be stuck in the pending state
+14. Next > Next > Create
+    - This will spin up a couple of EC2 instances and add them to the cluster
+    - EKS will take care of launching, installing packages required by Kubernetes like kubelet and kube proxy on these nodes
+    - And add all these into the cluster network
+15. Check that <b>Node group configuration</b> is "Active"
+16. There will be no Load Balancer at this point of time
+17. Load Balancer will be created automatically by AWS at the later stage
+18. Cluster has been setup just like Minikube except that it is not on a VM on our local machine
+
+![EC2-resources-setting-up-EKS](/diagrams/EC2-resources-setting-up-EKS.png)
+
+### Adding EFS as a Volume (with the CSI Volume Type)
+
+- [kubernetes-sigs/aws-efs-csi-driver](https://github.com/kubernetes-sigs/aws-efs-csi-driver)
+  - Run the deploy the stable driver command under "Installation" section
+  - We need this EFS driver since AWS EFS is not supported as a volume type otherwise
+
+1. EC2 > Security Groups > Create security group
+2. <b>Input Security group name: <b> e.g. "eks-efs"
+3. <b>VPC: <b>Select respective vpc e.g. "eksVpc"
+4. <b>Inbound rules: </b>Type: NFS & Source: Custom
+   - Input the "IPv4 CIDR" from the VPC page
+5. Create security group
+6. At Aamazon EFS > Create file system
+7. Input name & select your eksVpc > Customize
+8. Under the Security groups (eks-efs security group) > Next > Next > Create
+9. Copy "File system ID" (fs-00bf054bf589c6c31)
+10. Add your .yaml file `kind: PersistentVolume` details
+    - [examples/kubernetes/static_provisioning](https://github.com/kubernetes-sigs/aws-efs-csi-driver/tree/master/examples/kubernetes/static_provisioning)
 
 &nbsp;
 
