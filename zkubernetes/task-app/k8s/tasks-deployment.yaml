@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: tasks-deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks
+
+  template:
+    metadata:
+      labels:
+        app: tasks
+
+    spec:
+      containers:
+        - name: tasks
+          image: darrela/task-app-tasks:latest
+          env:
+            - name: AUTH_ADDRESS
+              value: auth-service.default
+
+            - name: TASKS_FOLDER
+              value: tasks # Pre-created `tasks` folder with tasks.txt required in `tasks-app.js`
+
+        - name: auth
+          image: darrela/task-app-auth:latest

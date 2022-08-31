@@ -21,7 +21,11 @@ spec:
           image: darrela/task-app-users:latest
           env:
             - name: AUTH_ADDRESS
-              value: localhost # Works because both users api and auth api are running on the same pod
+              # value: '10.96.45.138' # Switch from `localhost` to `CLUSTER-IP`
+              # Switch from IP Address to service name from `auth-service.yaml` file
+              # `.default` refers to the namespace from `kubectl get namespaces`
+              # `process.env.AUTH_ADDRESS` in `users-app.js` should still work
+              value: auth-service.default
 
         - name: auth
           image: darrela/task-app-auth:latest

@@ -47,8 +47,15 @@ app.post('/login', async (req, res) => {
 
   // normally, we'd find a user by email and grab his/ her ID and hashed password
   const hashedPassword = password + '_hash';
+
+  // AUTH_SERVICE refers to `auth-service.yaml` `metadata name`
+  // SERVICE_HOST is provided by kubernetes
+  // Remember to add the kubernetes generated env variable to docker-compose
   const response = await axios.get(
-    `http://${process.env.AUTH_ADDRESS}/token/` + hashedPassword + '/' + password
+    `http://${process.env.AUTH_SERVICE_SERVICE_HOST}/token/` +
+      hashedPassword +
+      '/' +
+      password
   );
   // const response = { status: 200, data: { token: 'abc' } };
   if (response.status === 200) {

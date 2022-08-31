@@ -1002,6 +1002,9 @@ services:
 ### Kubernetes Networking
 
 - <b>Reference: </b>task-app
+- [CoreDNS](https://coredns.io/)
+- In most cases, you do not want multiple containers per pod even though you can do it
+- And you should only do that if the containers are tightly coupled with each other
 
 ![task-app](/diagrams/task-app-pod-internal.png)
 ![task-app](/diagrams/task-app-cluster-internal.png)
