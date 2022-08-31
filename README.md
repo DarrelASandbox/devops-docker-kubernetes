@@ -1005,6 +1005,7 @@ services:
 - [CoreDNS](https://coredns.io/)
 - In most cases, you do not want multiple containers per pod even though you can do it
 - And you should only do that if the containers are tightly coupled with each other
+- <b>Reverse Proxy for the Frontend: </b>refer to `nginx.conf` file line 4 to 6
 
 ![task-app](/diagrams/task-app-pod-internal.png)
 ![task-app](/diagrams/task-app-cluster-internal.png)
