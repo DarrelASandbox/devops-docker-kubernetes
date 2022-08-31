@@ -15,6 +15,7 @@
     <li><a href="#aws-ecs">AWS ECS</a></li>
     <li><a href="#kubernetes-basics">Kubernetes Basics</a></li>
     <li><a href="#kubernetes-data--volumes">Kubernetes Data & Volumes</a></li>
+    <li><a href="#kubernetes-networking">Kubernetes Networking</a></li>
   </ol>
 </details>
 
@@ -955,6 +956,7 @@ services:
 |     Volumes are not necessarily persistent      |     Volumes persist until manually cleared      |
 | Volumes survive Container restarts and removals | Volumes survive Container restarts and removals |
 
+- <b>Reference: </b>story-app
 - We will get the error `"message": "Failed to open file."`, when we `GET` the route `/error` while using more than 1 replica for deployment of `story-app`.
   - Because the traffic has been redirected to another pod since we have error in the first pod.
   - We can switch the `emptyDir` volume type in `deployment.yaml` file to [`hostPath`](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath).
@@ -990,6 +992,19 @@ services:
 > If I start, let's say, 3 pods, and I get requests on all 3 pods simultaneously, wouldn't that possibly cause problems with writing to the same file on different containers simultaneously? Would it not possibly cause an error when one pod writes to a file, where it is usually locked then, and the other container also tries to write to the same file simultaneously?
 
 > <b>Joel: </b>Yes this is not something you would do in production, instead you would use a single pod (like a database) with a persistent volume to share data between replicas.
+
+&nbsp;
+
+---
+
+&nbsp;
+
+### Kubernetes Networking
+
+- <b>Reference: </b>task-app
+
+![task-app](/diagrams/task-app-pod-internal.png)
+![task-app](/diagrams/task-app-cluster-internal.png)
 
 &nbsp;
 

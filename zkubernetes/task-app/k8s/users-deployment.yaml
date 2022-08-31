@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: users-deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+
+  template:
+    metadata:
+      labels:
+        app: users
+
+    spec:
+      containers:
+        - name: users
+          image: darrela/task-app-users:latest
+          env:
+            - name: AUTH_ADDRESS
+              value: localhost # Works because both users api and auth api are running on the same pod
+
+        - name: auth
+          image: darrela/task-app-auth:latest
